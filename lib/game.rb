@@ -12,8 +12,9 @@ class Game
   MRUNLUCKY = ['|', 'O', '|', '/', '\\', '/', '\\'].freeze
 
   def initialize
-    @hidden_word = ''
-    @wrong_guess = 5
+    @hidden_word = []
+    @wrong_guess = 0
+    @guess = []
     @guess_correct = []
     @guess_wrong = []
     @body = [' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -33,16 +34,14 @@ class Game
     elsif %w[q quit].include?(choice)
       good_bye
     else
-      valid_choice
+      valid_choice_prompt
       menu
     end
   end
 
   def start_game
-    # game_display(self)
     select_secret_word
-    display_game
-    # play_game
+    play_game
   end
 
   def display_game
@@ -56,10 +55,43 @@ class Game
     end
   end
 
+  def play_game
+    until game_over? do
+      display_game
+      print @hidden_word
+      process_guess valid_input
+    end
+  end
+
+  def valid_input
+    valid_choice_prompt
+    input = gets.chomp.strip.downcase
+    valid_input if previously_guessed?(input) || input.empty?
+    input
+  end
+
+  def game_over?
+    @wrong_guess > 6 || @hidden_word == @guess_correct
+  end
+
+  def previously_guessed?(new_guess)
+    @guess.include?(new_guess)
+  end
+
   private
 
   def select_secret_word
-    @hidden_word = word_list.sample
+    @hidden_word = word_list.sample.downcase.split('')
     @hidden_word.length.times { @guess_correct.push(' ') }
+  end
+
+  def process_guess(input)
+    @hidden_word.each_with_index do |letter, index|
+      @guess_correct[index] = letter if letter == input
+      print "#{letter} #{input}"
+    end
+    @wrong_guess += 1 unless @hidden_word.include?(input)
+    @guess_wrong.push(input) unless @hidden_word.include?(input)
+    hung_man_build
   end
 end

@@ -35,7 +35,7 @@ module Display
     HEREDOC
   end
 
-  def valid_choice
+  def valid_choice_prompt
     puts 'Please enter a valid choice'
   end
 
@@ -50,7 +50,7 @@ module Display
   end
 
   def board_display(game_obj)
-    system 'clear'
+    # system 'clear'
     puts logo
     puts info_display(game_obj)
   end
