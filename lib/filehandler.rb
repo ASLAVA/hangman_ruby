@@ -10,4 +10,3 @@ module FileHandler
     list.select { |word| word.length > 4 && word.length < 12 }
   end
 end
-

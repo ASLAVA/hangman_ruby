@@ -7,33 +7,59 @@ require_relative 'filehandler'
 class Game
   include Display
   include FileHandler
+  attr_reader :body, :guess_correct, :guess_wrong
+
+  MRUNLUCKY = ['|', 'O', '|', '/', '\\', '/', '\\'].freeze
 
   def initialize
     @hidden_word = ''
-    @guess_remain = 7
+    @wrong_guess = 5
     @guess_correct = []
     @guess_wrong = []
+    @body = [' ', ' ', ' ', ' ', ' ', ' ', ' ']
   end
 
-  def start
-    choice = welcome
+  def menu
+    welcome
+    choice = gets.chomp!
+    process_menu(choice.downcase)
+  end
+
+  def process_menu(choice)
     if %w[s start].include?(choice)
-      @hidden_word = select_secret_word
       start_game
     elsif %w[l load].include?(choice)
       # add loading in stuff
+    elsif %w[q quit].include?(choice)
+      good_bye
     else
-      puts 'Thank you for playing!'
+      valid_choice
+      menu
     end
   end
 
   def start_game
-    puts 'next step'
+    # game_display(self)
+    select_secret_word
+    display_game
+    # play_game
+  end
+
+  def display_game
+    hung_man_build
+    board_display self
+  end
+
+  def hung_man_build
+    MRUNLUCKY.each_with_index do |cell, index|
+      @body[index] = cell if index < @wrong_guess
+    end
   end
 
   private
 
   def select_secret_word
-    word_list.sample
+    @hidden_word = word_list.sample
+    @hidden_word.length.times { @guess_correct.push(' ') }
   end
 end
