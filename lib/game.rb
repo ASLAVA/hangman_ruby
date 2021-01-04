@@ -56,11 +56,15 @@ class Game
   end
 
   def play_game
-    until game_over? do
+    until game_over?
       display_game
-      print @hidden_word
-      process_guess valid_input
+      input = valid_input
+      process_guess input if input.length == 1
+      process_guess_word input.split('') if input.length > 1
     end
+    display_game
+    you_win if game_win?
+    you_lose if game_lost?
   end
 
   def valid_input
@@ -71,7 +75,7 @@ class Game
   end
 
   def game_over?
-    @wrong_guess > 6 || @hidden_word == @guess_correct
+    game_lost? || game_win?
   end
 
   def previously_guessed?(new_guess)
@@ -80,18 +84,33 @@ class Game
 
   private
 
+  def game_win?
+    @hidden_word == @guess_correct
+  end
+
+  def game_lost?
+    @wrong_guess > 6
+  end
+
   def select_secret_word
     @hidden_word = word_list.sample.downcase.split('')
     @hidden_word.length.times { @guess_correct.push(' ') }
   end
 
   def process_guess(input)
-    @hidden_word.each_with_index do |letter, index|
-      @guess_correct[index] = letter if letter == input
-      print "#{letter} #{input}"
+    @hidden_word.each_with_index { |letter, index| @guess_correct[index] = letter if letter == input }
+    @wrong_guess += 1 unless @hidden_word.include?(input) || @guess_wrong.include?(input)
+    @guess_wrong.push(input) unless @hidden_word.include?(input) || @guess_wrong.include?(input)
+    hung_man_build
+  end
+
+  def process_guess_word(input)
+    if input == @hidden_word
+      @guess_correct = input
+    else
+      @wrong_guess += 1
+      @guess_wrong.push(input.join())
     end
-    @wrong_guess += 1 unless @hidden_word.include?(input)
-    @guess_wrong.push(input) unless @hidden_word.include?(input)
     hung_man_build
   end
 end

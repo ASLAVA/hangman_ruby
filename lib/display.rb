@@ -35,6 +35,17 @@ module Display
     HEREDOC
   end
 
+  def you_win
+    puts 'Congratulations! You saved Mr. Unlucky!'
+    puts 'Game Over. Thank you for playing.'
+  end
+
+  def you_lose
+    puts 'Mr. Unluckys legs stop twitching as he takes his last breath.',
+         'You did not save him. His son, also named Mr. Unlucky is up next.',
+         'Maybe you can save him. GAME OVER.'
+  end
+
   def valid_choice_prompt
     puts 'Please enter a valid choice'
   end
@@ -50,7 +61,7 @@ module Display
   end
 
   def board_display(game_obj)
-    # system 'clear'
+    #system 'clear'
     puts logo
     puts info_display(game_obj)
   end
